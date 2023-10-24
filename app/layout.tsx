@@ -42,7 +42,12 @@ export default function RootLayout({
             >
               <Navbar />
               <Separator />
-              {children}
+              <main
+                className="flex flex-grow w-full 
+              justify-center dark:bg-neutral-950 items-center"
+              >
+                {children}
+              </main>
             </div>
           </ThemeProvider>
         </body>
