@@ -3,16 +3,16 @@ import CreateCollectionButton from "@/components/CreateCollectionButton";
 import SadFace from "@/components/icons/SadFace";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs";
 import { Suspense } from "react";
 
-interface user {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+// interface user {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+// }
 export default async function Home() {
   return (
     <div>
@@ -65,6 +65,9 @@ function WelcomeMsgFallback() {
 async function CollectionList() {
   const user = await currentUser();
   const collections = await prisma.collection.findMany({
+    include: {
+      tasks: true,
+    },
     where: {
       userId: user?.id,
     },

@@ -1,5 +1,5 @@
 "use client";
-import { Collection } from "@prisma/client";
+import { Collection, Task } from "@prisma/client";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { useState, useTransition } from "react";
 import { Button } from "./ui/button";
@@ -27,15 +27,18 @@ import { toast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  collection: Collection;
+  collection: Collection & {
+    tasks: Task[];
+  };
 }
-const tasks: String[] = ["Task 1", "Task 2"];
 
 function CollectionCard({ collection }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  //
+  //Loading state
   const [isLoading, startTransition] = useTransition();
+  // define tasks
+  const tasks = collection.tasks;
 
   // remove collection
   const removeCollection = async () => {
@@ -75,13 +78,13 @@ function CollectionCard({ collection }: Props) {
         className="flex rounded-b-md flex-col
       dark:bg-neutral-950 shadow-lg"
       >
-        {tasks.length === 0 && <div>No Tasks</div>}
-        {tasks.length > 0 && (
+        {tasks?.length === 0 && <div>No Tasks</div>}
+        {tasks?.length > 0 && (
           <>
             <Progress className="rounded-none" value={45} />
             <div className="p-4 gap-3 flex flex-col">
               {tasks.map((task) => (
-                <div key={task}>{task}</div>
+                <div key={task.id}>{task.content}</div>
               ))}
             </div>
           </>
