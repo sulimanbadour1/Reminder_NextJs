@@ -25,6 +25,7 @@ import {
 import { deleteCollection } from "@/actions/collection";
 import { toast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
+import CreateTaskDialog from "./CreateTaskDialog";
 
 interface Props {
   collection: Collection & {
@@ -39,6 +40,8 @@ function CollectionCard({ collection }: Props) {
   const [isLoading, startTransition] = useTransition();
   // define tasks
   const tasks = collection.tasks;
+  // Show the tasks form  function
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // remove collection
   const removeCollection = async () => {
@@ -59,78 +62,89 @@ function CollectionCard({ collection }: Props) {
     }
   };
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger asChild>
-        <Button
-          variant={"ghost"}
-          className={cn(
-            "flex w-full justify-between p-6",
-            isOpen && "rounded-b-none",
-            CollectionColors[collection.color as CollectionColor]
-          )}
-        >
-          <span className="text-white font-bold">{collection.name}</span>
-          {!isOpen && <CaretDownIcon className="h-6 w-6" />}
-          {isOpen && <CaretUpIcon className="h-6 w-6" />}
-        </Button>
-      </CollapsibleTrigger>
-      <CollapsibleContent
-        className="flex rounded-b-md flex-col
+    <>
+      <CreateTaskDialog
+        open={showCreateModal}
+        setOpen={setShowCreateModal}
+        collection={collection}
+      />
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          <Button
+            variant={"ghost"}
+            className={cn(
+              "flex w-full justify-between p-6",
+              isOpen && "rounded-b-none",
+              CollectionColors[collection.color as CollectionColor]
+            )}
+          >
+            <span className="text-white font-bold">{collection.name}</span>
+            {!isOpen && <CaretDownIcon className="h-6 w-6" />}
+            {isOpen && <CaretUpIcon className="h-6 w-6" />}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent
+          className="flex rounded-b-md flex-col
       dark:bg-neutral-950 shadow-lg"
-      >
-        {tasks?.length === 0 && <div>No Tasks</div>}
-        {tasks?.length > 0 && (
-          <>
-            <Progress className="rounded-none" value={45} />
-            <div className="p-4 gap-3 flex flex-col">
-              {tasks.map((task) => (
-                <div key={task.id}>{task.content}</div>
-              ))}
-            </div>
-          </>
-        )}
-        <Separator />
-        <footer
-          className="h-[40px] px-4 p-[2px] text-xs text-neutral-500
-        flex justify-between items-center"
         >
-          <p>Created at {collection.createdAt.toDateString()}</p>
-          {isLoading && <div>Deleting...</div>}
-          {!isLoading && (
-            <div>
-              <Button size={"icon"} variant={"ghost"}>
-                <PlusIcon />
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button size={"icon"} variant={"ghost"}>
-                    <TrashIcon />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogTitle>
-                    Are you sure you want to delete this collection?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone, all tasks will be deleted.
-                  </AlertDialogDescription>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        startTransition(removeCollection);
-                      }}
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+          {tasks?.length === 0 && <div>No Tasks</div>}
+          {tasks?.length > 0 && (
+            <>
+              <Progress className="rounded-none" value={45} />
+              <div className="p-4 gap-3 flex flex-col">
+                {tasks.map((task) => (
+                  <div key={task.id}>{task.content}</div>
+                ))}
+              </div>
+            </>
           )}
-        </footer>
-      </CollapsibleContent>
-    </Collapsible>
+          <Separator />
+          <footer
+            className="h-[40px] px-4 p-[2px] text-xs text-neutral-500
+        flex justify-between items-center"
+          >
+            <p>Created at {collection.createdAt.toDateString()}</p>
+            {isLoading && <div>Deleting...</div>}
+            {!isLoading && (
+              <div>
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  size={"icon"}
+                  variant={"ghost"}
+                >
+                  <PlusIcon />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size={"icon"} variant={"ghost"}>
+                      <TrashIcon />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogTitle>
+                      Are you sure you want to delete this collection?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone, all tasks will be deleted.
+                    </AlertDialogDescription>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          startTransition(removeCollection);
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
+          </footer>
+        </CollapsibleContent>
+      </Collapsible>
+    </>
   );
 }
 
