@@ -1,7 +1,7 @@
 "use client";
 import { Collection } from "@prisma/client";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { CollectionColor, CollectionColors } from "@/lib/constants";
@@ -9,14 +9,52 @@ import { CaretDownIcon, CaretUpIcon } from "@radix-ui/react-icons";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
 import { Progress } from "./ui/progress";
 import { Separator } from "./ui/separator";
+import PlusIcon from "./icons/PlusIcon";
+import TrashIcon from "./icons/TrashIcon";
+import { Alert } from "./ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { deleteCollection } from "@/actions/collection";
+import { toast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 interface Props {
   collection: Collection;
 }
-const tasks: String = ["Task 1", "Task 2"];
+const tasks: String[] = ["Task 1", "Task 2"];
 
 function CollectionCard({ collection }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  //
+  const [isLoading, startTransition] = useTransition();
+
+  // remove collection
+  const removeCollection = async () => {
+    try {
+      await deleteCollection(collection.id);
+      toast({
+        title: "Success",
+        description: "Collection deleted successfully!",
+      });
+      router.refresh();
+    } catch (error) {
+      console.log("Error while deleting collection", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again later",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
@@ -54,6 +92,39 @@ function CollectionCard({ collection }: Props) {
         flex justify-between items-center"
         >
           <p>Created at {collection.createdAt.toDateString()}</p>
+          {isLoading && <div>Deleting...</div>}
+          {!isLoading && (
+            <div>
+              <Button size={"icon"} variant={"ghost"}>
+                <PlusIcon />
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size={"icon"} variant={"ghost"}>
+                    <TrashIcon />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogTitle>
+                    Are you sure you want to delete this collection?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone, all tasks will be deleted.
+                  </AlertDialogDescription>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        startTransition(removeCollection);
+                      }}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
         </footer>
       </CollapsibleContent>
     </Collapsible>
