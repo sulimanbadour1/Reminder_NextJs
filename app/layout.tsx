@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { Separator } from "@/components/ui/separator";
 import { ThemeProvider } from "@/Providers/ThemeProvider";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 

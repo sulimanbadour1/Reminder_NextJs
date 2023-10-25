@@ -1,3 +1,4 @@
+import SadFace from "@/components/icons/SadFace";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import prisma from "@/lib/prisma";
@@ -16,21 +17,32 @@ export default async function Home() {
       <Suspense fallback={<WelcomeMsgFallback />}>
         <WelcomeMsg />
       </Suspense>
+      <Suspense fallback={<div>Loading Collections.</div>}>
+        <CollectionList />
+      </Suspense>
     </div>
   );
 }
 
 async function WelcomeMsg() {
   const user = await currentUser();
-  await wait(500);
+  await wait(1000);
   if (!user) {
     return <div>Error, Name not found</div>;
   }
 
   return (
-    <div className="flexx w-full ">
+    <div className="flexx w-full mb-12 ">
       <h1 className="text-2xl font-bold">
-        Welcome, {user.firstName} <br />
+        Welcome,{" "}
+        <span
+          className="bg-gradient-to-r
+    from-red-700 via-blue-700 to-red-600 bg-clip-text text-transparent text-2xl font-bold"
+        >
+          {" "}
+          {user.firstName}
+        </span>{" "}
+        <br />
         This is a reminder app for you, by you.
       </h1>
     </div>
@@ -39,7 +51,7 @@ async function WelcomeMsg() {
 
 function WelcomeMsgFallback() {
   return (
-    <div className="flexx w-full ">
+    <div className="flexx w-full mb-12">
       <h1 className="text-xl font-bold">
         <Skeleton className="w-[150px] h-[36px]" />
         <Skeleton className="w-[150px] h-[36px]" />
@@ -55,9 +67,10 @@ async function CollectionList() {
       userId: user?.id,
     },
   });
-  if (!collections) {
+  if (collections.length === 0) {
     return (
       <Alert>
+        <SadFace />
         <AlertTitle>There are no collections yet!</AlertTitle>
         <AlertDescription>
           Please, Create a collection to start 😃
