@@ -59,6 +59,15 @@ This is a full-stack reminder app designed using cutting-edge technologies to of
 
 ---
 
+## Prisma
+
+- npm i @prisma/client.
+- npm i -D prisma .
+- npx prisma init --datasource-provider sqlite.
+- After defining the dataset params, run :
+- npx prisma migrate dev.
+- npx prisma studio.
+
 ## Contribution
 
 Interested in improving the Reminder App? Fork the repository, make your changes, and submit a pull request. All contributions are welcome!
