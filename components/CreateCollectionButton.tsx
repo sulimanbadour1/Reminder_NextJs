@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 
 import CreateCollectionSheet from "./CreateSidebar";
+import CreateSidebar from "./CreateSidebar";
 
 function CreateCollectionButton() {
   const [open, setOpen] = useState(false);

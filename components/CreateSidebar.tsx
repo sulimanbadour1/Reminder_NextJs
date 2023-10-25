@@ -1,5 +1,12 @@
+import React from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "./ui/sheet";
 import { useForm } from "react-hook-form";
-import { Sheet, SheetContent, SheetDescription, SheetHeader } from "./ui/sheet";
 import {
   createCollectionSchema,
   createCollectionSchemaType,
@@ -26,39 +33,66 @@ import { CollectionColor, CollectionColors } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import { createCollection } from "@/actions/collection";
 
-// App
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { toast } from "./ui/use-toast";
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-function CreateSidebar({ open, onOpenChange }: Props) {
+function CreateCollectionSheet({ open, onOpenChange }: Props) {
   const form = useForm<createCollectionSchemaType>({
     resolver: zodResolver(createCollectionSchema),
     defaultValues: {},
   });
 
-  const onSubmit = (data: createCollectionSchemaType) => {
-    console.log(data);
+  const router = useRouter();
+
+  const onSubmit = async (data: createCollectionSchemaType) => {
+    try {
+      await createCollection(data);
+
+      // Close the sheet
+      openChangeWrapper(false);
+      router.refresh();
+
+      toast({
+        title: "Success",
+        description: "Collection created successfully!",
+      });
+    } catch (e: any) {
+      // Show toast
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again later",
+        variant: "destructive",
+      });
+      console.log("Error while creating collection", e);
+    }
   };
 
-  const OpenChangeWrapper = (open: boolean) => {
+  const openChangeWrapper = (open: boolean) => {
     form.reset();
     onOpenChange(open);
   };
 
   return (
-    <Sheet open={open} onOpenChange={OpenChangeWrapper}>
+    <Sheet open={open} onOpenChange={openChangeWrapper}>
       <SheetContent>
-        <SheetHeader>Create, add a new collection</SheetHeader>
-        <SheetDescription>
-          Collection are a way to group your reminders.
-        </SheetDescription>
+        <SheetHeader>
+          <SheetTitle>Add new collection</SheetTitle>
+          <SheetDescription>
+            Collections are a way to group your tasks
+          </SheetDescription>
+        </SheetHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 mt-4"
+            className="space-y-4 flex flex-col"
           >
             <FormField
               control={form.control}
@@ -67,13 +101,14 @@ function CreateSidebar({ open, onOpenChange }: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Personal" {...form} />
+                    <Input placeholder="Personal" {...field} />
                   </FormControl>
-                  <FormDescription>Name of this collection</FormDescription>
+                  <FormDescription>Collection name</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="color"
@@ -99,10 +134,7 @@ function CreateSidebar({ open, onOpenChange }: Props) {
                             key={color}
                             value={color}
                             className={cn(
-                              `w-full h-8 rounded-md text-white
-                            focus:text-white focus:font-bold focus:ring-2
-                            ring-neutral-600 focus:ring-inset dark:focus:ring-white
-                            focus:px-6`,
+                              `w-full h-8 rounded-md my-1 text-white focus:text-white focus:font-bold focus:ring-2 ring-neutral-600 focus:ring-inset dark:focus:ring-white focus:px-8`,
                               CollectionColors[color as CollectionColor]
                             )}
                           >
@@ -113,7 +145,7 @@ function CreateSidebar({ open, onOpenChange }: Props) {
                     </Select>
                   </FormControl>
                   <FormDescription>
-                    Select a color for the collection
+                    Select a color for your collection
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -121,9 +153,10 @@ function CreateSidebar({ open, onOpenChange }: Props) {
             />
           </form>
         </Form>
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-3 mt-4">
           <Separator />
           <Button
+            disabled={form.formState.isSubmitting}
             variant={"outline"}
             className={cn(
               form.watch("color") &&
@@ -132,6 +165,9 @@ function CreateSidebar({ open, onOpenChange }: Props) {
             onClick={form.handleSubmit(onSubmit)}
           >
             Confirm
+            {form.formState.isSubmitting && (
+              <ReloadIcon className="ml-2 h-4 w-4 animate-spin" />
+            )}
           </Button>
         </div>
       </SheetContent>
@@ -139,4 +175,4 @@ function CreateSidebar({ open, onOpenChange }: Props) {
   );
 }
 
-export default CreateSidebar;
+export default CreateCollectionSheet;

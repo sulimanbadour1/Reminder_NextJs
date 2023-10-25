@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeProvider } from "@/Providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,6 +49,7 @@ export default function RootLayout({
               justify-center dark:bg-neutral-950 items-center"
               >
                 {children}
+                <Toaster />
               </main>
             </div>
           </ThemeProvider>
