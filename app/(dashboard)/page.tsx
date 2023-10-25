@@ -1,5 +1,6 @@
 import CollectionCard from "@/components/CollectionCard";
 import CreateCollectionButton from "@/components/CreateCollectionButton";
+import Footer from "@/components/Footer";
 import SadFace from "@/components/icons/SadFace";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,6 +22,7 @@ export default async function Home() {
       </Suspense>
       <Suspense fallback={<div>Loading Collections.</div>}>
         <CollectionList />
+        <Footer />
       </Suspense>
     </div>
   );
