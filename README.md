@@ -6,6 +6,11 @@ This is a full-stack reminder app designed using cutting-edge technologies to of
 
 ---
 
+## Screens
+
+<img src="">
+<img src="">
+
 ## Tech Stack
 
 1. **Next.js**: For the frontend and backend server-side rendering, ensuring optimal performance and SEO.
