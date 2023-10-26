@@ -8,8 +8,8 @@ This is a full-stack reminder app designed using cutting-edge technologies to of
 
 ## Screens
 
-<img src="">
-<img src="">
+<img src="https://github.com/sulimanbadour1/Reminder_NextJs/blob/main/public/screen1.JPG?raw=true">
+<img src="https://github.com/sulimanbadour1/Reminder_NextJs/blob/main/public/screen2.JPG?raw=true">
 
 ## Tech Stack
 
