@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/user/d7fffb39-631e-454c-9cce-bb60e92d14c5/project/018b62e4-6b37-4b36-a870-2cbe502e571b.svg)](https://wakatime.com/badge/user/d7fffb39-631e-454c-9cce-bb60e92d14c5/project/018b62e4-6b37-4b36-a870-2cbe502e571b)
+
 # Reminder App Documentation
 
 ## Overview
