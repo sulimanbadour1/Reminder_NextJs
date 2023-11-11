@@ -75,7 +75,6 @@ function WelcomeMsgFallback() {
 async function CollectionList() {
   try {
     const user = await currentUser();
-    console.log("User:", user);
 
     const collections = await prisma.collection.findMany({
       include: {
@@ -85,8 +84,6 @@ async function CollectionList() {
         userId: user?.id,
       },
     });
-
-    console.log("Collections:", collections);
 
     if (collections.length === 0) {
       return (
