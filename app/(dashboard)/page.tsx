@@ -10,6 +10,7 @@ import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs";
 import e from "express";
 import { Suspense } from "react";
+import { sql } from "@vercel/postgres";
 
 // interface user {
 //   firstName: string;
