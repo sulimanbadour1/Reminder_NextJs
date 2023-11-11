@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { prisma } from "@/lib/prisma";
 import { wait } from "@/lib/wait";
 import { currentUser } from "@clerk/nextjs";
+import e from "express";
 import { Suspense } from "react";
 
 // interface user {
@@ -31,28 +32,33 @@ export default async function Home() {
 }
 
 async function WelcomeMsg() {
-  const user = await currentUser();
-  await wait(1000);
-  if (!user) {
-    return <div>Error, Name not found</div>;
-  }
+  try {
+    const user = await currentUser();
+    await wait(1000);
+    if (!user) {
+      return <div>Error, Name not found</div>;
+    }
 
-  return (
-    <div className="flexx w-full mb-12 ">
-      <h1 className="text-2xl font-bold">
-        Welcome,{" "}
-        <span
-          className="bg-gradient-to-r
+    return (
+      <div className="flexx w-full mb-12 ">
+        <h1 className="text-2xl font-bold">
+          Welcome,{" "}
+          <span
+            className="bg-gradient-to-r
     from-red-700 via-blue-700 to-red-600 bg-clip-text text-transparent text-2xl font-bold"
-        >
-          {" "}
-          {user.firstName}
-        </span>{" "}
-        <br />
-        This is a reminder app for you, by you.
-      </h1>
-    </div>
-  );
+          >
+            {" "}
+            {user.firstName}
+          </span>{" "}
+          <br />
+          This is a reminder app for you, by you.
+        </h1>
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return <div>An error occurred while fetching user data.</div>;
+  }
 }
 
 function WelcomeMsgFallback() {
@@ -67,37 +73,44 @@ function WelcomeMsgFallback() {
 }
 
 async function CollectionList() {
-  const user = await currentUser();
-  const collections = await prisma.collection.findMany({
-    include: {
-      tasks: true,
-    },
-    where: {
-      userId: user?.id,
-    },
-  });
-  if (collections.length === 0) {
+  try {
+    const user = await currentUser();
+    const collections = await prisma.collection.findMany({
+      include: {
+        tasks: true,
+      },
+      where: {
+        userId: user?.id,
+      },
+    });
+
+    if (collections.length === 0) {
+      return (
+        <div className="flex flex-col gap-5">
+          <Alert>
+            <SadFace />
+            <AlertTitle>There are no collections yet!</AlertTitle>
+            <AlertDescription>
+              Please, Create a collection to start 😃
+            </AlertDescription>
+          </Alert>
+          <CreateCollectionButton />
+        </div>
+      );
+    }
+
     return (
-      <div className="flex flex-col gap-5">
-        <Alert>
-          <SadFace />
-          <AlertTitle>There are no collections yet!</AlertTitle>
-          <AlertDescription>
-            Please, Create a collection to start 😃
-          </AlertDescription>
-        </Alert>
+      <>
         <CreateCollectionButton />
-      </div>
+        <div className="flex flex-col gap-4 mt-6">
+          {collections.map((collection) => (
+            <CollectionCard key={collection.id} collection={collection} />
+          ))}
+        </div>
+      </>
     );
+  } catch (error) {
+    console.error("Error fetching collections:", error);
+    return <div>An error occurred while fetching collections.</div>;
   }
-  return (
-    <>
-      <CreateCollectionButton />
-      <div className="flex flex-col gap-4 mt-6">
-        {collections.map((collection) => (
-          <CollectionCard key={collection.id} collection={collection} />
-        ))}
-      </div>
-    </>
-  );
 }
